@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { ledgerEntrySchema, type LedgerEntryInput } from "@/lib/validation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,6 +18,13 @@ export function LedgerEntryForm({
   const [amount, setAmount] = useState("");
   const [note, setNote] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [justSaved, setJustSaved] = useState(false);
+
+  useEffect(() => {
+    if (!justSaved) return;
+    const timeout = setTimeout(() => setJustSaved(false), 1200);
+    return () => clearTimeout(timeout);
+  }, [justSaved]);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -34,6 +42,7 @@ export function LedgerEntryForm({
     onSubmit(result.data);
     setAmount("");
     setNote("");
+    setJustSaved(true);
   }
 
   return (
@@ -68,7 +77,22 @@ export function LedgerEntryForm({
         <Input id="note" value={note} onChange={(e) => setNote(e.target.value)} />
       </div>
       {error && <p className="text-sm text-destructive">{error}</p>}
-      <Button type="submit">Add entry</Button>
+      <div className="flex items-center gap-3">
+        <Button type="submit">Add entry</Button>
+        <AnimatePresence>
+          {justSaved && (
+            <motion.span
+              initial={{ opacity: 0, scale: 0.6 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.6 }}
+              transition={{ duration: 0.2 }}
+              className="font-heading text-sm font-semibold text-brand-copper"
+            >
+              Saved ✓
+            </motion.span>
+          )}
+        </AnimatePresence>
+      </div>
     </form>
   );
 }

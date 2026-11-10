@@ -16,14 +16,17 @@ export function ProductList({
             onClick={() => onSelect(product)}
             className="flex w-full items-center justify-between rounded-md border p-3 text-left hover:bg-accent"
           >
-            <span>
+            <span className="flex flex-col">
               <span className="font-medium">{product.name}</span>
               {product.name_hi && (
-                <span className="ml-2 text-muted-foreground">{product.name_hi}</span>
+                <span className="text-sm text-muted-foreground">{product.name_hi}</span>
               )}
+              <span className="text-sm text-muted-foreground">
+                {product.stock_qty} {product.unit} in stock
+              </span>
             </span>
-            <span className="text-sm text-muted-foreground">
-              ₹{product.price} · {product.stock_qty} {product.unit}
+            <span className="font-heading text-lg font-semibold tabular-nums">
+              ₹{product.price}
             </span>
           </button>
         </li>

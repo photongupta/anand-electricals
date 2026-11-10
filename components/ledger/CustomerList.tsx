@@ -19,7 +19,7 @@ export function CustomerList({
             className="flex w-full items-center justify-between rounded-md border p-3 text-left hover:bg-accent"
           >
             <span className="font-medium">{customer.name}</span>
-            <span className="text-sm text-muted-foreground">
+            <span className="font-heading text-lg font-semibold tabular-nums">
               ₹{balances[customer.id] ?? 0}
             </span>
           </button>
