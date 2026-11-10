@@ -1,0 +1,29 @@
+{
+  "nav": {
+    "dashboard": "डैशबोर्ड",
+    "inventory": "इन्वेंटरी",
+    "ledger": "खाता",
+    "settings": "सेटिंग्स"
+  },
+  "login": {
+    "email": "ईमेल",
+    "password": "पासवर्ड",
+    "submit": "लॉग इन करें"
+  },
+  "inventory": {
+    "search": "उत्पाद खोजें…",
+    "add": "उत्पाद जोड़ें",
+    "save": "सहेजें"
+  },
+  "ledger": {
+    "credit": "उधार",
+    "payment": "भुगतान",
+    "amount": "राशि",
+    "note": "टिप्पणी",
+    "addEntry": "एंट्री जोड़ें"
+  },
+  "settings": {
+    "language": "भाषा",
+    "logout": "लॉग आउट"
+  }
+}

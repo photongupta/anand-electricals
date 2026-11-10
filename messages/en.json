@@ -1,0 +1,29 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "inventory": "Inventory",
+    "ledger": "Ledger",
+    "settings": "Settings"
+  },
+  "login": {
+    "email": "Email",
+    "password": "Password",
+    "submit": "Log in"
+  },
+  "inventory": {
+    "search": "Search products…",
+    "add": "Add product",
+    "save": "Save"
+  },
+  "ledger": {
+    "credit": "Credit",
+    "payment": "Payment",
+    "amount": "Amount",
+    "note": "Note",
+    "addEntry": "Add entry"
+  },
+  "settings": {
+    "language": "Language",
+    "logout": "Log out"
+  }
+}
