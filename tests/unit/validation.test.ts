@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { productSchema, ledgerEntrySchema } from "@/lib/validation";
+import { productSchema, ledgerEntrySchema, customerSchema } from "@/lib/validation";
 
 describe("productSchema", () => {
   it("rejects an empty or whitespace-only name", () => {
@@ -17,6 +17,23 @@ describe("productSchema", () => {
   it("accepts a valid product", () => {
     expect(productSchema.safeParse({ name: "MCB 32A", category: "MCBs", unit: "piece", price: 120, stock_qty: 10 }).success).toBe(true);
   });
+
+  it("accepts an explicit null for name_hi and low_stock_threshold (clearing them on edit)", () => {
+    const result = productSchema.safeParse({
+      name: "MCB 32A",
+      name_hi: null,
+      category: "MCBs",
+      unit: "piece",
+      price: 120,
+      stock_qty: 10,
+      low_stock_threshold: null,
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.name_hi).toBeNull();
+      expect(result.data.low_stock_threshold).toBeNull();
+    }
+  });
 });
 
 describe("ledgerEntrySchema", () => {
@@ -30,5 +47,19 @@ describe("ledgerEntrySchema", () => {
 
   it("accepts a valid entry", () => {
     expect(ledgerEntrySchema.safeParse({ customer_id: "c1", type: "credit", amount: 300 }).success).toBe(true);
+  });
+});
+
+describe("customerSchema", () => {
+  it("rejects an empty or whitespace-only name", () => {
+    expect(customerSchema.safeParse({ name: "   " }).success).toBe(false);
+  });
+
+  it("accepts a name with no phone", () => {
+    expect(customerSchema.safeParse({ name: "Ramesh" }).success).toBe(true);
+  });
+
+  it("accepts a name with a phone", () => {
+    expect(customerSchema.safeParse({ name: "Ramesh", phone: "9876543210" }).success).toBe(true);
   });
 });

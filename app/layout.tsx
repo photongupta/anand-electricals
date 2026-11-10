@@ -3,6 +3,7 @@ import { Space_Grotesk, IBM_Plex_Sans, Noto_Sans_Devanagari } from "next/font/go
 import Image from "next/image";
 import { IntlProvider } from "@/components/layout/IntlProvider";
 import { ServiceWorkerRegister } from "@/components/layout/ServiceWorkerRegister";
+import { Nav } from "@/components/layout/Nav";
 import "./globals.css";
 
 const spaceGrotesk = Space_Grotesk({
@@ -56,6 +57,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
               Anand Electricals
             </span>
           </header>
+          <Nav />
           <main className="flex-1">{children}</main>
         </IntlProvider>
       </body>

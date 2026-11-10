@@ -12,7 +12,7 @@ export function ProductForm({
   onSubmit,
 }: {
   initialValues?: Product;
-  onSubmit: (values: ProductInput) => void;
+  onSubmit: (values: ProductInput) => Promise<{ error?: string }>;
 }) {
   const [values, setValues] = useState({
     name: initialValues?.name ?? "",
@@ -24,26 +24,32 @@ export function ProductForm({
     low_stock_threshold: initialValues?.low_stock_threshold?.toString() ?? "",
   });
   const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const result = productSchema.safeParse({
       name: values.name,
-      name_hi: values.name_hi || undefined,
+      name_hi: values.name_hi || null,
       category: values.category,
       unit: values.unit,
       price: Number(values.price),
       stock_qty: Number(values.stock_qty),
       low_stock_threshold: values.low_stock_threshold
         ? Number(values.low_stock_threshold)
-        : undefined,
+        : null,
     });
     if (!result.success) {
       setError(result.error.issues[0]?.message ?? "Invalid product");
       return;
     }
     setError(null);
-    onSubmit(result.data);
+    setIsSubmitting(true);
+    const { error: submitError } = await onSubmit(result.data);
+    setIsSubmitting(false);
+    if (submitError) {
+      setError(submitError);
+    }
   }
 
   return (
@@ -110,7 +116,9 @@ export function ProductForm({
         />
       </div>
       {error && <p className="text-sm text-destructive">{error}</p>}
-      <Button type="submit">Save</Button>
+      <Button type="submit" disabled={isSubmitting}>
+        Save
+      </Button>
     </form>
   );
 }

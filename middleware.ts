@@ -19,13 +19,22 @@ export async function middleware(request: NextRequest) {
     }
   );
 
+  // getUser() revalidates the session against the Supabase Auth server
+  // instead of trusting the cookie as-is, unlike getSession().
   const {
-    data: { session },
-  } = await supabase.auth.getSession();
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  if (!session && request.nextUrl.pathname !== "/login") {
+  const isLoginPath = request.nextUrl.pathname === "/login";
+
+  if (!user && !isLoginPath) {
     const loginUrl = new URL("/login", request.url);
     return NextResponse.redirect(loginUrl);
+  }
+
+  if (user && isLoginPath) {
+    const dashboardUrl = new URL("/dashboard", request.url);
+    return NextResponse.redirect(dashboardUrl);
   }
 
   return response;

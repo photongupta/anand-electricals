@@ -12,13 +12,14 @@ export function LedgerEntryForm({
   onSubmit,
 }: {
   customerId: string;
-  onSubmit: (values: LedgerEntryInput) => void;
+  onSubmit: (values: LedgerEntryInput) => Promise<{ error?: string }>;
 }) {
   const [type, setType] = useState<"credit" | "payment">("credit");
   const [amount, setAmount] = useState("");
   const [note, setNote] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [justSaved, setJustSaved] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (!justSaved) return;
@@ -26,7 +27,7 @@ export function LedgerEntryForm({
     return () => clearTimeout(timeout);
   }, [justSaved]);
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const result = ledgerEntrySchema.safeParse({
       customer_id: customerId,
@@ -39,7 +40,13 @@ export function LedgerEntryForm({
       return;
     }
     setError(null);
-    onSubmit(result.data);
+    setIsSubmitting(true);
+    const { error: submitError } = await onSubmit(result.data);
+    setIsSubmitting(false);
+    if (submitError) {
+      setError(submitError);
+      return;
+    }
     setAmount("");
     setNote("");
     setJustSaved(true);
@@ -78,7 +85,9 @@ export function LedgerEntryForm({
       </div>
       {error && <p className="text-sm text-destructive">{error}</p>}
       <div className="flex items-center gap-3">
-        <Button type="submit">Add entry</Button>
+        <Button type="submit" disabled={isSubmitting}>
+          Add entry
+        </Button>
         <AnimatePresence>
           {justSaved && (
             <motion.span

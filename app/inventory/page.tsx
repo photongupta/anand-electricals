@@ -28,10 +28,16 @@ export default function InventoryPage() {
   const [search, setSearch] = useState("");
   const [editing, setEditing] = useState<Product | null>(null);
   const [isAdding, setIsAdding] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   async function refetch() {
     const supabase = createClient();
-    const { data } = await supabase.from("products").select();
+    const { data, error } = await supabase.from("products").select();
+    if (error) {
+      setLoadError(error.message);
+      return;
+    }
+    setLoadError(null);
     setProducts((data as Product[]) ?? []);
   }
 
@@ -39,15 +45,25 @@ export default function InventoryPage() {
     refetch();
   }, []);
 
-  async function handleSave(values: ProductInput) {
+  async function handleSave(values: ProductInput): Promise<{ error?: string }> {
     const supabase = createClient();
-    if (editing) {
-      await supabase.from("products").update(values).eq("id", editing.id);
-    } else {
-      await supabase.from("products").insert(values);
+    const { error } = editing
+      ? await supabase.from("products").update(values).eq("id", editing.id)
+      : await supabase.from("products").insert(values);
+    if (error) {
+      return { error: error.message };
     }
     setEditing(null);
     setIsAdding(false);
+    await refetch();
+    return {};
+  }
+
+  async function handleDelete() {
+    if (!editing) return;
+    const supabase = createClient();
+    await supabase.from("products").delete().eq("id", editing.id);
+    setEditing(null);
     await refetch();
   }
 
@@ -64,6 +80,7 @@ export default function InventoryPage() {
         />
         <Button onClick={() => setIsAdding(true)}>Add product</Button>
       </div>
+      {loadError && <p className="text-sm text-destructive">{loadError}</p>}
       <ProductList products={filtered} onSelect={setEditing} />
       <Dialog
         open={dialogOpen}
@@ -79,6 +96,11 @@ export default function InventoryPage() {
             <DialogTitle>{editing ? "Edit product" : "Add product"}</DialogTitle>
           </DialogHeader>
           <ProductForm initialValues={editing ?? undefined} onSubmit={handleSave} />
+          {editing && (
+            <Button variant="destructive" onClick={handleDelete}>
+              Delete product
+            </Button>
+          )}
         </DialogContent>
       </Dialog>
     </div>
