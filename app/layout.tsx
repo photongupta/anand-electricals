@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Space_Grotesk, IBM_Plex_Sans, Noto_Sans_Devanagari } from "next/font/google";
 import Image from "next/image";
 import { IntlProvider } from "@/components/layout/IntlProvider";
+import { ServiceWorkerRegister } from "@/components/layout/ServiceWorkerRegister";
 import "./globals.css";
 
 const spaceGrotesk = Space_Grotesk({
@@ -47,6 +48,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <script dangerouslySetInnerHTML={{ __html: DARK_MODE_SCRIPT }} />
       </head>
       <body className="min-h-full flex flex-col">
+        <ServiceWorkerRegister />
         <IntlProvider>
           <header className="flex items-center gap-2 border-b border-border px-4 py-3">
             <Image src="/logo.svg" alt="" width={32} height={32} />
